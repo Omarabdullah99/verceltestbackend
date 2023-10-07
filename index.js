@@ -20,7 +20,7 @@ async function main(){
     console.log('database connection')
 }
 server.get('/',(req,res)=>{
-    res.json({status:'successfully'})
+    res.json({status:'success'})
 })
 
 server.listen(5000,()=>{
