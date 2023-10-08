@@ -31,21 +31,21 @@ exports.loginUser=async(req,res)=>{
 
     try {
         const oldUser= await User.findOne({email})
+        if (!oldUser) {
+            res.status(404).json({ message: "User doesn't exist" });
+        } else {
+            const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         
-        if(!oldUser){
-             res.status(404).json({ message: "User doesn't exist" });
+            if (!isPasswordCorrect) {
+                res.status(404).json({ message: "Invalid credentials" });
+            } else {
+                const token = jwt.sign({ email: oldUser.email, id: oldUser.id }, secret, {
+                    expiresIn: "72h"
+                });
+                res.status(200).json({ result: oldUser, token });
+            }
         }
-
-        const isPasswordCorrect= await bcrypt.compare(password, oldUser.password)
-
-        if(!isPasswordCorrect){
-            res.status(404).json({ message: "invalid credintials" });
-        }
-
-        const token= jwt.sign({email:oldUser.email, id:oldUser.id},secret,{
-            expiresIn:"72h"
-        })
-        res.status(200).json({ result:oldUser,token });
+        
         
     } catch (error) {
         res.status(404).json(error);
