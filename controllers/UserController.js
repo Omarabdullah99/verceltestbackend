@@ -22,7 +22,11 @@ exports.createUser=async(req,res)=>{
         res.status(201).json({result,token})
         
     } catch (error) {
-        return res.status(400).json(error)
+        if (error.code === 11000) { // Check for duplicate key error
+            return res.status(400).json({ message: "Email already exists" });
+        }
+        return res.status(400).json(error);
+        
     }
 }
 
